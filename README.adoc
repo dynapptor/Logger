@@ -1,165 +1,75 @@
-= Logger Library for Arduino
-:toc: left
-:toclevels: 3
-:icons: font
-:source-highlighter: highlightjs
-:sectnums:
+# Arduino Logger Library
 
-A lightweight and flexible logging library for Arduino projects. Enables structured logging with multiple log levels, formatted messages, and optional callback forwarding.
+A lightweight logging library for Arduino, supporting multiple log levels, serial output, and custom callbacks for flexible log handling.
 
-== Features
+## Features
+- **Log Levels**: Supports `error`, `info`, and `debug` levels, configurable via `Loglevel` enum.
+- **Output Options**: Logs to a `Stream` (e.g., `Serial`) or via a custom callback.
+- **Flash String Support**: Handles `PROGMEM` strings to save RAM.
+- **Configurable**: Enable/disable logging, set log levels, and customize buffer size.
+- **Callback Support**: Integrate with other systems (e.g., MQTT) using a callback.
 
-* Three log levels: `ERROR`, `INFO`, `DEBUG`
-* Logging to any `Stream` object (e.g., `Serial`)
-* Optional `Callback` support for custom log handling
-* Lightweight and efficient (buffered, variadic format support)
-* Flash memory string (`F()`) support to optimize RAM usage
-* Easily extensible
+## Installation
+1. Download the library from the [GitHub repository](https://github.com/your-repo).
+2. Extract the folder to your Arduino `libraries` directory.
+3. Include the library in your sketch with `#include <Logger.h>`.
 
-== Installation
-
-Clone or download the library and place it in your Arduino `libraries` folder.
-
-[source, bash]
-----
-git clone https://github.com/dynapptor/Logger.git
-----
-
-== Quick Start
-
-[source, cpp]
-----
+## Usage
+### Basic Example
+```cpp
 #include <Arduino.h>
 #include <Logger.h>
 
 void setup() {
   Serial.begin(115200);
-
-  logger.begin(Serial, loggerCallback([](uint8_t level, const char *levelN, const char *str, const char *strN) {
-    Serial.println(level);    // Log level (numeric)
-    Serial.println(levelN);   // Log level name (string)
-    Serial.println(str);      // Format string
-    Serial.println(strN);     // Final message
-  }));
-
-  logger.setLogLevel(Loglevel::debug);  // Enable all levels
-
-  logger.info(F("Logger initialized."));
+  logger.begin(Serial); // Initialize logger with Serial
+  logger.setLogLevel(Loglevel::debug); // Set log level
+  logger.info(F("Logger started!")); // Log a message
 }
 
 void loop() {
-  logger.error(F("Error occurred: %i, %s"), 404, "Not Found");
-  logger.info(F("System running. Tick: %i"), millis());
+  logger.error(F("Error: %i"), 42); // Log error
+  logger.info(F("Info message")); // Log info
   delay(1000);
 }
-----
+```
 
-== API Overview
-
-=== Initialization
-
-[source, cpp]
-----
-void begin(Stream &strm);
-void begin(loggerCallback cb);
-void begin(Stream &strm, loggerCallback cb);
-----
-
-=== Configuration
-
-[source, cpp]
-----
-void setLogLevel(Loglevel level);
-Loglevel getLogLevel();
-
-void setEnabled(uint8_t enabled);
-uint8_t getEnabled();
-----
-
-=== Logging Methods
-
-Each method accepts `const __FlashStringHelper *` (F() macro) or `const char *`:
-
-[source, cpp]
-----
-void error(const __FlashStringHelper *msg, ...);
-void error(const char *msg, ...);
-
-void info(const __FlashStringHelper *msg, ...);
-void info(const char *msg, ...);
-
-void debug(const __FlashStringHelper *msg, ...);
-void debug(const char *msg, ...);
-----
-
-=== Loglevel Enum
-
-[source, cpp]
-----
-enum class Loglevel : uint8_t {
-  err = 1,
-  info = 2,
-  debug = 3
-};
-----
-
-== Advanced Usage
-
-=== Custom Callback Handling
-
-The logger supports a `Callback` mechanism for sending logs elsewhere (e.g., MQTT, SD card, WebSockets):
-
-[source, cpp]
-----
-logger.begin(loggerCallback([](uint8_t level, const char *levelN, const char *format, const char *final) {
-  // You can route 'final' to any destination
-}));
-----
-
-=== Buffer Size
-
-To override the default buffer size (255 bytes), define `LOG_BUFFER_SIZE` before including `Logger.h`:
-
-[source, cpp]
-----
-#define LOG_BUFFER_SIZE 128
+### Callback Example
+```cpp
+#include <Arduino.h>
 #include <Logger.h>
-----
 
-== Example Output
+void setup() {
+  Serial.begin(115200);
+  logger.begin(Serial, loggerCallback([](uint8_t level, const char *levelN, const char *str, const char *strN) {
+    Serial.print("Callback: ");
+    Serial.println(strN); // Handle log message
+  }));
+  logger.info(F("Logger with callback!"));
+}
 
+void loop() {
+  logger.debug(F("Debug message"));
+  delay(1000);
+}
+```
 
-== File Structure
+## API
+- `Logger::begin(Stream &strm)`: Initialize with a serial stream.
+- `Logger::begin(loggerCallback ev)`: Initialize with a callback.
+- `Logger::begin(Stream &strm, loggerCallback ev)`: Initialize with both.
+- `Logger::setLogLevel(Loglevel level)`: Set the log level (`err`, `info`, `debug`).
+- `Logger::getLogLevel()`: Get the current log level.
+- `Logger::setEnabled(uint8_t en)`: Enable (`1`) or disable (`0`) logging.
+- `Logger::getEnabled()`: Check if logging is enabled.
+- `Logger::error/info/debug(const char *s, ...)`: Log messages with variable arguments.
+- `Logger::error/info/debug(const __FlashStringHelper *message, ...)`: Log Flash string messages.
 
-Logger/
-├── Logger.h
-├── Logger.cpp
-├── examples/
-│ └── HelloLog/
-│ └── HelloLog.ino
-|── doc/
-│ └── readme.md
-│ └── api.md
-├── keywords.txt
-├── library.properties
-└── README.adoc
+## Configuration
+- **Log Buffer Size**: Define `LOG_BUFFER_SIZE` before including the library (default: 255).
+- **Log Levels**: Extend `Loglevel` enum for custom levels (max 255).
 
-
-== Requirements
-
-* Arduino IDE 1.8+ or Arduino CLI
-* Any microcontroller compatible with `Stream` output (UNO, ESP32, STM32, etc.)
-
-== License
-
-This library is released under the MIT License.
-
-Copyright (c) 2025  
-Ferenc Mayer <dynapptor@dynapptor.com>
-
-== Links
-
-* GitHub: https://github.com/dynapptor/Logger
-* Arduino Documentation: https://www.arduino.cc/reference/en/
+## License
+MIT License. See `LICENSE` for details.
 
 
