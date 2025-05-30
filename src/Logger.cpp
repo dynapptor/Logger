@@ -128,3 +128,4 @@ void Logger::debug(const char *s, ...) {
   va_end(args);
 }
 
+Logger logger;
