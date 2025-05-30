@@ -1,0 +1,30 @@
+####################################
+# Syntax Highlighting Keywords
+####################################
+
+# Data Types (KEYWORD1)
+Logger          KEYWORD1
+Loglevel        KEYWORD1
+
+# Methods and Functions (KEYWORD2)
+begin           KEYWORD2
+setLogLevel     KEYWORD2
+getLogLevel     KEYWORD2
+setEnabled      KEYWORD2
+getEnabled      KEYWORD2
+log             KEYWORD2
+error           KEYWORD2
+info            KEYWORD2
+debug           KEYWORD2
+
+# Constants (KEYWORD2)
+err             KEYWORD2
+info            KEYWORD2
+debug           KEYWORD2
+
+# Callback type (KEYWORD2)
+loggerCallback  KEYWORD2
+
+# Instances (LITERAL1)
+logger          LITERAL1
+

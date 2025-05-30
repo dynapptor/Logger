@@ -1,0 +1,165 @@
+= Logger Library for Arduino
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlightjs
+:sectnums:
+
+A lightweight and flexible logging library for Arduino projects. Enables structured logging with multiple log levels, formatted messages, and optional callback forwarding.
+
+== Features
+
+* Three log levels: `ERROR`, `INFO`, `DEBUG`
+* Logging to any `Stream` object (e.g., `Serial`)
+* Optional `Callback` support for custom log handling
+* Lightweight and efficient (buffered, variadic format support)
+* Flash memory string (`F()`) support to optimize RAM usage
+* Easily extensible
+
+== Installation
+
+Clone or download the library and place it in your Arduino `libraries` folder.
+
+[source, bash]
+----
+git clone https://github.com/dynapptor/Logger.git
+----
+
+== Quick Start
+
+[source, cpp]
+----
+#include <Arduino.h>
+#include <Logger.h>
+
+void setup() {
+  Serial.begin(115200);
+
+  logger.begin(Serial, loggerCallback([](uint8_t level, const char *levelN, const char *str, const char *strN) {
+    Serial.println(level);    // Log level (numeric)
+    Serial.println(levelN);   // Log level name (string)
+    Serial.println(str);      // Format string
+    Serial.println(strN);     // Final message
+  }));
+
+  logger.setLogLevel(Loglevel::debug);  // Enable all levels
+
+  logger.info(F("Logger initialized."));
+}
+
+void loop() {
+  logger.error(F("Error occurred: %i, %s"), 404, "Not Found");
+  logger.info(F("System running. Tick: %i"), millis());
+  delay(1000);
+}
+----
+
+== API Overview
+
+=== Initialization
+
+[source, cpp]
+----
+void begin(Stream &strm);
+void begin(loggerCallback cb);
+void begin(Stream &strm, loggerCallback cb);
+----
+
+=== Configuration
+
+[source, cpp]
+----
+void setLogLevel(Loglevel level);
+Loglevel getLogLevel();
+
+void setEnabled(uint8_t enabled);
+uint8_t getEnabled();
+----
+
+=== Logging Methods
+
+Each method accepts `const __FlashStringHelper *` (F() macro) or `const char *`:
+
+[source, cpp]
+----
+void error(const __FlashStringHelper *msg, ...);
+void error(const char *msg, ...);
+
+void info(const __FlashStringHelper *msg, ...);
+void info(const char *msg, ...);
+
+void debug(const __FlashStringHelper *msg, ...);
+void debug(const char *msg, ...);
+----
+
+=== Loglevel Enum
+
+[source, cpp]
+----
+enum class Loglevel : uint8_t {
+  err = 1,
+  info = 2,
+  debug = 3
+};
+----
+
+== Advanced Usage
+
+=== Custom Callback Handling
+
+The logger supports a `Callback` mechanism for sending logs elsewhere (e.g., MQTT, SD card, WebSockets):
+
+[source, cpp]
+----
+logger.begin(loggerCallback([](uint8_t level, const char *levelN, const char *format, const char *final) {
+  // You can route 'final' to any destination
+}));
+----
+
+=== Buffer Size
+
+To override the default buffer size (255 bytes), define `LOG_BUFFER_SIZE` before including `Logger.h`:
+
+[source, cpp]
+----
+#define LOG_BUFFER_SIZE 128
+#include <Logger.h>
+----
+
+== Example Output
+
+
+== File Structure
+
+Logger/
+├── Logger.h
+├── Logger.cpp
+├── examples/
+│ └── HelloLog/
+│ └── HelloLog.ino
+|── doc/
+│ └── readme.md
+│ └── api.md
+├── keywords.txt
+├── library.properties
+└── README.adoc
+
+
+== Requirements
+
+* Arduino IDE 1.8+ or Arduino CLI
+* Any microcontroller compatible with `Stream` output (UNO, ESP32, STM32, etc.)
+
+== License
+
+This library is released under the MIT License.
+
+Copyright (c) 2025  
+Ferenc Mayer <dynapptor@dynapptor.com>
+
+== Links
+
+* GitHub: https://github.com/dynapptor/Logger
+* Arduino Documentation: https://www.arduino.cc/reference/en/
+
+
