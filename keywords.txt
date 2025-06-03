@@ -1,0 +1,35 @@
+# Logger Library Keywords
+# Syntax: keyword<TAB>KEYWORD_TYPE
+
+# Classes and Types
+Logger		KEYWORD1
+Loglevel	KEYWORD1
+loggerCallback	KEYWORD1
+
+# Global Instance
+logger		KEYWORD1
+
+# Enum Values
+err		LITERAL1
+info		LITERAL1
+debug		LITERAL1
+
+# Static Strings
+logError	LITERAL1
+logInfo		LITERAL1
+logDebug	LITERAL1
+
+# Macros
+LOG_BUFFER_SIZE	LITERAL1
+LOGGER_MSG_LONG	LITERAL1
+
+# Methods
+begin		KEYWORD2
+setLogLevel	KEYWORD2
+getLogLevel	KEYWORD2
+setEnabled	KEYWORD2
+getEnabled	KEYWORD2
+log		KEYWORD2
+error		KEYWORD2
+info		KEYWORD2
+debug		KEYWORD2

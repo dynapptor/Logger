@@ -1,0 +1,73 @@
+# Arduino Logger Library
+
+A lightweight logging library for Arduino, supporting multiple log levels, serial output, and custom callbacks for flexible log handling.
+
+## Features
+- **Log Levels**: Supports `error`, `info`, and `debug` levels, configurable via `Loglevel` enum.
+- **Output Options**: Logs to a `Stream` (e.g., `Serial`) or via a custom callback.
+- **Flash String Support**: Handles `PROGMEM` strings to save RAM.
+- **Configurable**: Enable/disable logging, set log levels, and customize buffer size.
+- **Callback Support**: Integrate with other systems (e.g., MQTT) using a callback.
+
+## Installation
+1. Download the library from the [GitHub repository](https://github.com/dynapptor/Logger).
+2. Extract the folder to your Arduino `libraries` directory.
+3. Include the library in your sketch with `#include <Logger.h>`.
+
+## Usage
+### Basic Example
+```cpp
+#include <Arduino.h>
+#include <Logger.h>
+
+void setup() {
+  Serial.begin(115200);
+  logger.begin(Serial); // Initialize logger with Serial
+  logger.setLogLevel(Loglevel::debug); // Set log level
+  logger.info(F("Logger started!")); // Log a message
+}
+
+void loop() {
+  logger.error(F("Error: %i"), 42); // Log error
+  logger.info(F("Info message")); // Log info
+  delay(1000);
+}
+```
+
+### Callback Example
+```cpp
+#include <Arduino.h>
+#include <Logger.h>
+
+void setup() {
+  Serial.begin(115200);
+  logger.begin(Serial, loggerCallback([](uint8_t level, const char *levelN, const char *str, const char *strN) {
+    Serial.print("Callback: ");
+    Serial.println(strN); // Handle log message
+  }));
+  logger.info(F("Logger with callback!"));
+}
+
+void loop() {
+  logger.debug(F("Debug message"));
+  delay(1000);
+}
+```
+
+## API
+- `Logger::begin(Stream &strm)`: Initialize with a serial stream.
+- `Logger::begin(loggerCallback ev)`: Initialize with a callback.
+- `Logger::begin(Stream &strm, loggerCallback ev)`: Initialize with both.
+- `Logger::setLogLevel(Loglevel level)`: Set the log level (`err`, `info`, `debug`).
+- `Logger::getLogLevel()`: Get the current log level.
+- `Logger::setEnabled(uint8_t en)`: Enable (`1`) or disable (`0`) logging.
+- `Logger::getEnabled()`: Check if logging is enabled.
+- `Logger::error/info/debug(const char *s, ...)`: Log messages with variable arguments.
+- `Logger::error/info/debug(const __FlashStringHelper *message, ...)`: Log Flash string messages.
+
+## Configuration
+- **Log Buffer Size**: Define `LOG_BUFFER_SIZE` before including the library (default: 255).
+- **Log Levels**: Extend `Loglevel` enum for custom levels (max 255).
+
+## License
+MIT License. See `LICENSE` for details.
